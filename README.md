@@ -68,3 +68,96 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+```JavaScript
+OLd code.
+import React, { useEffect, useState } from 'react';
+import axios from 'axios'; // Corrected import
+import './Weather.css';
+
+// Import React Bootstrap components.
+import { Container, Row, Col, Card } from 'react-bootstrap';
+
+const Weather = () => {
+    const [weatherData, setWeatherData] = useState({}); // Corrected initialization
+
+    const CITY = "allahabad";
+    const API_Key = '1e6b4adee09751e8a20ba35907014d3a';
+
+    const weatherFunction = async () => {
+        try {
+            const res = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_Key}&units=metric`);
+            setWeatherData(res.data);
+        } catch (error) {
+            console.log("Error:", error.message);
+        }
+    }
+
+    useEffect(() => {
+        console.log("useEffect..");
+        weatherFunction();
+    }, []);
+
+    // get current Data and time.
+    const getCurrentTime = () => {
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+        const currentTime = new Date();
+        const day = days[currentTime.getDay()];
+        const month = months[currentTime.getMonth()];
+        const year = currentTime.getFullYear();
+        let hours = currentTime.getHours();
+        const minutes = currentTime.getMinutes();
+        let period = "AM";
+    
+        // Adjust hours to 12-hour format and determine AM/PM
+        if (hours >= 12) {
+            period = "PM";
+            if (hours > 12) {
+                hours -= 12;
+            }
+        }
+        if (hours === 0) {
+            hours = 12;
+        }
+    
+        const formattedTime = `${day} ${month} ${currentTime.getDate()}, ${year} ${hours}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
+    
+        console.log(currentTime);
+        return formattedTime;
+    };
+    console.log(getCurrentTime());
+    
+    return (
+        <div className="background-container">
+            <Container>
+                <Row>
+                    <Col md={8}>
+                        <Card className="text-center">
+                            <Card.Header>Weather Apps</Card.Header>
+                            {Object.keys(weatherData).length !== 0 && ( // Check if weatherData is not empty
+                                <Card.Body>
+                                    <Card.Title>{weatherData.name}, {weatherData.sys.country}</Card.Title>
+                                    <Card.Text>
+                                        Temp: {weatherData.main.temp} °C
+                                        <br />
+                                        {weatherData.weather[0].main}
+                                        <br />
+                                    </Card.Text>
+                                </Card.Body>
+                            )}
+                            <Card.Footer className="text-muted">{getCurrentTime()}</Card.Footer>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
+    )
+}
+
+export default Weather;
+
+
+```
